@@ -8,12 +8,16 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Sokoban Grid Puzzle"
 config/description="Grid-based Sokoban puzzle — Capsitech technical assignment"
 run/main_scene="res://scenes/Main.tscn"
-config/features=PackedStringArray("4.3", "Mobile")
+config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -24,9 +28,15 @@ GridManager="*res://scripts/core/GridManager.gd"
 
 window/size/viewport_width=720
 window/size/viewport_height=1280
-window/handheld/orientation="portrait"
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation="portrait"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
 
 [rendering]
 
+rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"

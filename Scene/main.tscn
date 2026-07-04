@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://thauhtpg5uvd"]
+
+[ext_resource type="Script" uid="uid://ctemtbi4jqmw6" path="res://scripts/view/LevelView3D.gd" id="1_f6udf"]
+[ext_resource type="PackedScene" uid="uid://dvkup65reco5e" path="res://Scene/assets/wall_scene.tscn" id="2_1xcnr"]
+[ext_resource type="PackedScene" uid="uid://c08sl7rcqqkha" path="res://Scene/assets/floor_scene.tscn" id="3_ow1sv"]
+[ext_resource type="PackedScene" uid="uid://fbo8lxalh1g1" path="res://Scene/assets/target_scene.tscn" id="4_75buv"]
+[ext_resource type="PackedScene" uid="uid://d3jmkkl3stvs6" path="res://Scene/assets/box_scene.tscn" id="5_c2iwn"]
+[ext_resource type="PackedScene" uid="uid://dxoc5iaamm1sy" path="res://Scene/assets/player_scene.tscn" id="6_3pt4j"]
+
+[node name="Main" type="Node3D" unique_id=1483947697]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1518243101]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1100800635]
+transform = Transform3D(1, 0, 0, 0, 0.17364822, 0.9848077, 0, -0.9848077, 0.17364822, 3, 8, 7)
+
+[node name="LevelView" type="Node3D" parent="." unique_id=1085803463]
+script = ExtResource("1_f6udf")
+wall_scene = ExtResource("2_1xcnr")
+floor_scene = ExtResource("3_ow1sv")
+target_scene = ExtResource("4_75buv")
+box_scene = ExtResource("5_c2iwn")
+player_scene = ExtResource("6_3pt4j")

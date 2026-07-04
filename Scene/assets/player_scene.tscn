@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dxoc5iaamm1sy"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v0s4m"]
+albedo_color = Color(0.50041765, 0.72728175, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ql73s"]
+material = SubResource("StandardMaterial3D_v0s4m")
+
+[node name="player_scene" type="Node3D" unique_id=923070031]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=789285220]
+mesh = SubResource("BoxMesh_ql73s")
