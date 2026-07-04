@@ -78,7 +78,7 @@ func _build_static_geometry() -> void:
 		if target_scene:
 			var target_inst := target_scene.instantiate()
 			_static_root.add_child(target_inst)
-			target_inst.position = grid_to_world(target_cell) + Vector3(0, 0.01, 0)
+			target_inst.position = grid_to_world(target_cell) + Vector3(0, 0.20, 0)
 
 
 # ---------------------------------------------------------------------------
