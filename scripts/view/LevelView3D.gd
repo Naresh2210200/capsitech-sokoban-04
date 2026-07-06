@@ -17,6 +17,8 @@ const CELL_SIZE: float = 1.0
 @export var player_hop_height: float = 0.35
 @export var player_hop_duration: float = 0.14
 
+@export var move_sound: AudioStream   # assign in Inspector, e.g. footstep.wav/ogg
+
 @export var reject_shake_strength: float = 0.12
 @export var reject_shake_duration: float = 0.18
 @export var reject_vibration_ms: int = 60
@@ -29,6 +31,7 @@ var _box_instances: Array[Node3D] = []
 var _player_instance: Node3D
 var _static_root: Node3D
 var _dynamic_root: Node3D
+var _audio_player: AudioStreamPlayer
 var _camera_base_position: Vector3
 
 
@@ -41,8 +44,13 @@ func _ready() -> void:
 	_dynamic_root.name = "DynamicEntities"
 	add_child(_dynamic_root)
 
+	_audio_player = AudioStreamPlayer.new()
+	_audio_player.name = "MoveAudioPlayer"
+	add_child(_audio_player)
+
 	GridManager.level_loaded.connect(_on_level_loaded)
 	GridManager.state_changed.connect(_on_state_changed)
+	GridManager.move_completed.connect(_on_move_completed)
 	GridManager.level_won.connect(_on_level_won)
 	GridManager.level_lost.connect(_on_level_lost)
 	GridManager.move_rejected.connect(_on_move_rejected)
@@ -202,6 +210,12 @@ func _on_state_changed() -> void:
 			var target_pos := grid_to_world(GridManager.boxes[i]) + Vector3(0, 0.5, 0)
 			_tween_to(_box_instances[i], target_pos)
 			_update_box_feedback(i)
+
+
+func _on_move_completed(_move_count: int) -> void:
+	if move_sound and _audio_player:
+		_audio_player.stream = move_sound
+		_audio_player.play()
 
 
 func _on_level_won(_move_count: int) -> void:
