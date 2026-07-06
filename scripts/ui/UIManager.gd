@@ -58,13 +58,11 @@ func _on_undo_pressed() -> void:
 	GridManager.undo()
 
 
-## Quits the app straight from the gameplay HUD, so a player doesn't have
-## to finish or lose a level just to back out. get_tree().quit() only
-## does anything on desktop builds - Android back button / app switcher
-## is how players actually leave on mobile, so this button mainly matters
-## for desktop testing/exports.
+## Takes the player back to the main menu instead of quitting the app -
+## same as the Main Menu button on the credits screen, so it also resets
+## progress back to level 1 for a clean restart later.
 func _on_exit_pressed() -> void:
-	get_tree().quit()
+	_on_main_menu_pressed()
 
 
 func _on_move_completed(move_count: int) -> void:
