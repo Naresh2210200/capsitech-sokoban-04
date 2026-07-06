@@ -1,20 +1,4 @@
 extends Node3D
-## LevelView3D
-##
-## Pure RENDERING layer. Reads GridManager's logical grid data and draws
-## it in 3D world space. Never mutates GridManager state directly — it
-## only reacts to signals (`level_loaded`, `state_changed`, `level_won`)
-## and rebuilds / updates visuals. `level_loaded` triggers a full rebuild
-## of static geometry + dynamic entities (a *new* level's shape may differ
-## entirely from the previous one); `state_changed` only tweens existing
-## instances to their new positions after a move/undo. This is the
-## "UI Rendering Framework" end of the required data pipeline:
-##
-##   User Gesture -> InputController -> GridManager -> LevelView3D
-##
-## Grid logic stays 2D (Vector2i column/row), which we map onto the
-## 3D XZ ground plane. Y is used only for visual height (stacking,
-## bounce animations, camera framing) — it never affects grid logic.
 
 const CELL_SIZE: float = 1.0
 
@@ -42,6 +26,7 @@ func _ready() -> void:
 	GridManager.level_loaded.connect(_on_level_loaded)
 	GridManager.state_changed.connect(_on_state_changed)
 	GridManager.level_won.connect(_on_level_won)
+	GridManager.level_lost.connect(_on_level_lost)
 
 	_build_static_geometry()
 	_build_dynamic_entities()
@@ -136,6 +121,12 @@ func _on_state_changed() -> void:
 func _on_level_won(_move_count: int) -> void:
 	# Hook for win-state visual feedback (particles, confetti, camera pan).
 	# Kept intentionally empty here — wired up once the UI layer exists.
+	pass
+
+
+func _on_level_lost(_move_count: int) -> void:
+	# Hook for deadlock visual feedback (shake, red tint, stuck-box glow).
+	# Kept intentionally empty here — UIManager handles the overlay.
 	pass
 
 

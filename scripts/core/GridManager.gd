@@ -15,6 +15,7 @@ signal level_loaded
 signal move_completed(move_count: int)
 signal move_rejected(direction: Direction)
 signal level_won(move_count: int)
+signal level_lost(move_count: int)
 
 var grid: Array = []          # Array[Array[CellType]] — grid[y][x]
 var width: int = 0
@@ -141,6 +142,8 @@ func try_move(direction: Direction) -> bool:
 
 	if is_win():
 		level_won.emit(move_count)
+	elif is_deadlocked():
+		level_lost.emit(move_count)
 
 	return true
 
@@ -166,6 +169,39 @@ func is_win() -> bool:
 		if not targets.has(box):
 			return false
 	return true
+
+
+## Detects "no more solvable moves" states: a box that is not on a target
+## but is pinned into a corner it can never be pushed out of.
+##
+## This checks the classic *corner deadlock* only: a box is stuck if it has
+## a wall (or the grid boundary) on one horizontal side AND one vertical
+## side simultaneously — e.g. wall to its left AND wall above it. No push
+## direction can ever move a box out of a true corner, so the level is
+## unsolvable the moment this happens.
+##
+## Note: this intentionally does NOT catch every possible deadlock (e.g.
+## two boxes freezing each other along a wall with no target on that edge,
+## or multi-box "freeze" patterns). Those require heavier analysis; the
+## corner check catches the vast majority of dead-ends a player creates
+## and keeps this O(boxes) with no extra memory, matching the project's
+## performance constraints.
+func is_deadlocked() -> bool:
+	for box in boxes:
+		if targets.has(box):
+			continue
+		if _is_corner_stuck(box):
+			return true
+	return false
+
+
+func _is_corner_stuck(box: Vector2i) -> bool:
+	var blocked_left := not _is_walkable(box + Vector2i(-1, 0))
+	var blocked_right := not _is_walkable(box + Vector2i(1, 0))
+	var blocked_up := not _is_walkable(box + Vector2i(0, -1))
+	var blocked_down := not _is_walkable(box + Vector2i(0, 1))
+
+	return (blocked_left or blocked_right) and (blocked_up or blocked_down)
 
 
 # ---------------------------------------------------------------------------
