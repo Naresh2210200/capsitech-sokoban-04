@@ -40,6 +40,10 @@ var _history: Array[Dictionary] = []   # snapshots for Undo
 ## load_level_from_file with a different path) to switch levels.
 @export var default_level_path: String = "res://levels/level_01.txt"
 
+## "Par" move count for this level — the target the star rating is measured
+## against. Tune per level; has no effect on core logic, only scoring/UI.
+@export var par_moves: int = 8
+
 
 func _ready() -> void:
 	load_level_from_file(default_level_path)
@@ -156,8 +160,13 @@ func undo() -> bool:
 	var snapshot: Dictionary = _history.pop_back()
 	player_pos = snapshot["player_pos"]
 	boxes = snapshot["boxes"].duplicate()
-	move_count = snapshot["move_count"]
+	# Undo is itself treated as a move — it costs a step rather than
+	# rolling the counter back, so move_count always reflects total
+	# actions taken (forward moves + undos), matching the "rigid step
+	# framework" requirement.
+	move_count += 1
 	state_changed.emit()
+	move_completed.emit(move_count)
 	return true
 
 
@@ -184,5 +193,4 @@ func _push_snapshot() -> void:
 	_history.append({
 		"player_pos": player_pos,
 		"boxes": boxes.duplicate(),
-		"move_count": move_count,
 	})

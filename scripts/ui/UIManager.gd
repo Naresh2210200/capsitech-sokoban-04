@@ -1,9 +1,8 @@
 extends CanvasLayer
 ## UIManager
 ##
-## References UI nodes built manually in the scene tree (see comments
-## below for exact node names/paths expected). Listens to GridManager
-## signals only — never touches grid data or 3D rendering directly.
+## References UI nodes built manually in the scene tree. Listens to
+## GridManager signals only — never touches grid data or 3D rendering
 
 @onready var _move_label: Label = $HUD/MoveLabel
 @onready var _undo_button: Button = $HUD/UndoButton
@@ -28,7 +27,6 @@ func _ready() -> void:
 
 func _on_undo_pressed() -> void:
 	GridManager.undo()
-	_update_move_label(GridManager.move_count)
 
 
 func _on_move_completed(move_count: int) -> void:
