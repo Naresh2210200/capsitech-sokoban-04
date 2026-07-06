@@ -1,14 +1,4 @@
 extends Node
-## GridManager
-##
-## Pure logical layer for the Sokoban grid. Holds ZERO references to
-## Sprite2D, TileMap, or any visual node. Owns the grid data model,
-## player/box positions, move history (for Undo), and win detection.
-##
-## View layer (LevelView3D.gd) listens to `state_changed` / `move_completed`
-## / `level_won` signals and re-renders — it never mutates this data
-## directly. This keeps state logic and UI rendering fully decoupled,
-## per the architecture requirement in the technical spec.
 
 enum Direction { UP, DOWN, LEFT, RIGHT }
 enum CellType { WALL, FLOOR, TARGET }
@@ -21,6 +11,7 @@ const DIRECTION_VECTORS := {
 }
 
 signal state_changed
+signal level_loaded
 signal move_completed(move_count: int)
 signal move_rejected(direction: Direction)
 signal level_won(move_count: int)
@@ -116,7 +107,7 @@ func load_level_from_text(layout: String) -> void:
 					row.append(CellType.FLOOR)
 		grid.append(row)
 
-	state_changed.emit()
+	level_loaded.emit()
 
 
 # ---------------------------------------------------------------------------

@@ -3,9 +3,12 @@ extends Node3D
 ##
 ## Pure RENDERING layer. Reads GridManager's logical grid data and draws
 ## it in 3D world space. Never mutates GridManager state directly — it
-## only reacts to signals (`state_changed`, `level_won`) and rebuilds /
-## updates visuals. This is the "UI Rendering Framework" end of the
-## required data pipeline:
+## only reacts to signals (`level_loaded`, `state_changed`, `level_won`)
+## and rebuilds / updates visuals. `level_loaded` triggers a full rebuild
+## of static geometry + dynamic entities (a *new* level's shape may differ
+## entirely from the previous one); `state_changed` only tweens existing
+## instances to their new positions after a move/undo. This is the
+## "UI Rendering Framework" end of the required data pipeline:
 ##
 ##   User Gesture -> InputController -> GridManager -> LevelView3D
 ##
@@ -36,6 +39,7 @@ func _ready() -> void:
 	_dynamic_root.name = "DynamicEntities"
 	add_child(_dynamic_root)
 
+	GridManager.level_loaded.connect(_on_level_loaded)
 	GridManager.state_changed.connect(_on_state_changed)
 	GridManager.level_won.connect(_on_level_won)
 
@@ -78,7 +82,7 @@ func _build_static_geometry() -> void:
 		if target_scene:
 			var target_inst := target_scene.instantiate()
 			_static_root.add_child(target_inst)
-			target_inst.position = grid_to_world(target_cell) + Vector3(0, 0.20, 0)
+			target_inst.position = grid_to_world(target_cell) + Vector3(0, 0.20	, 0)
 
 
 # ---------------------------------------------------------------------------
@@ -106,6 +110,16 @@ func _build_dynamic_entities() -> void:
 # ---------------------------------------------------------------------------
 # Signal handlers — sync visuals to logical state (no logic decisions here)
 # ---------------------------------------------------------------------------
+
+## Fired only when a whole new level has been loaded (initial load, Next
+## Level, Restart, or jumping to an arbitrary level). The new level's grid
+## can be a completely different shape/size than the previous one, so we
+## tear down and rebuild everything from scratch — a tween can't fix a
+## room that's the wrong shape.
+func _on_level_loaded() -> void:
+	_build_static_geometry()
+	_build_dynamic_entities()
+
 
 func _on_state_changed() -> void:
 	if _player_instance:
