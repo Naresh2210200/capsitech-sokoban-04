@@ -1,5 +1,8 @@
 extends Node
-# levels 1-5
+# Autoload. Keeps track of WHICH level we're on and moves to the next one.
+# Doesn't know anything about grid logic - just tells GridManager which
+# file to load. Keeps this separate so GridManager doesn't need to care
+# that levels 1-5 even exist.
 
 signal level_changed(index: int, path: String)
 
@@ -19,14 +22,14 @@ func _ready() -> void:
 
 
 func load_current_level() -> void:
-	current_index = clampi(current_index, 0, level_paths.size() - 1)
+	current_index = clampi(current_index, 0, level_paths.size() - 1)  # just in case
 	var path: String = level_paths[current_index]
 	GridManager.load_level_from_file(path)
 	level_changed.emit(current_index, path)
 
 
 func restart_level() -> void:
-	load_current_level()
+	load_current_level()   # reloading the same index resets it
 
 
 func has_next_level() -> bool:
@@ -38,6 +41,8 @@ func next_level() -> void:
 		current_index += 1
 		load_current_level()
 	else:
+		# ran out of levels - loop back to level 1 for now.
+		# could swap this for a "you win the whole game" screen later
 		current_index = 0
 		load_current_level()
 

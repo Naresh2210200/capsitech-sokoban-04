@@ -1,8 +1,11 @@
 extends Node
+# Autoload. Holds all the grid data (walls, boxes, targets, player pos).
+# No visual stuff in here at all - LevelView3D just reads this and draws it.
 
 enum Direction { UP, DOWN, LEFT, RIGHT }
 enum CellType { WALL, FLOOR, TARGET }
 
+# quick lookup so try_move doesn't need a match statement every call
 const DIRECTION_VECTORS := {
 	Direction.UP: Vector2i(0, -1),
 	Direction.DOWN: Vector2i(0, 1),
@@ -10,14 +13,14 @@ const DIRECTION_VECTORS := {
 	Direction.RIGHT: Vector2i(1, 0),
 }
 
-signal state_changed
-signal level_loaded
+signal state_changed          # fires on every move/undo - view layer tweens to new positions
+signal level_loaded           # fires when a whole new level comes in - view layer rebuilds everything
 signal move_completed(move_count: int)
 signal move_rejected(direction: Direction)
 signal level_won(move_count: int)
-signal level_lost(move_count: int)
+signal level_lost(move_count: int)   # deadlock, not literally "lost" the app, just stuck
 
-var grid: Array = []          # Array[Array[CellType]] — grid[y][x]
+var grid: Array = []          # grid[y][x] -> CellType
 var width: int = 0
 var height: int = 0
 
@@ -26,15 +29,10 @@ var boxes: Array[Vector2i] = []
 var targets: Array[Vector2i] = []
 
 var move_count: int = 0
-var _history: Array[Dictionary] = []   # snapshots for Undo
+var _history: Array[Dictionary] = []   # undo stack, just player pos + boxes each entry
 
-## Path of the level loaded automatically on startup. Change this (or call
-## load_level_from_file with a different path) to switch levels.
-@export var default_level_path: String = "res://levels/level_01.txt"
-
-## "Par" move count for this level — the target the star rating is measured
-## against. Tune per level; has no effect on core logic, only scoring/UI.
-@export var par_moves: int = 8
+@export var default_level_path: String = "res://levels/level_01.txt"  # loaded on startup
+@export var par_moves: int = 8   # used for star rating, doesn't affect gameplay
 
 
 func _ready() -> void:
@@ -42,10 +40,9 @@ func _ready() -> void:
 
 
 # ---------------------------------------------------------------------------
-# Level loading
+# loading a level
 # ---------------------------------------------------------------------------
 
-## Reads a level layout from a text file on disk and loads it.
 func load_level_from_file(path: String) -> void:
 	if not FileAccess.file_exists(path):
 		push_error("GridManager: level file not found: %s" % path)
@@ -55,64 +52,79 @@ func load_level_from_file(path: String) -> void:
 	file.close()
 	load_level_from_text(layout)
 
-## Loads a level from a simple text layout:
-##   #  wall
-##   .  floor
-##   T  target marker
-##   $  box (on floor)
-##   B  box already on a target
-##   @  player (on floor)
-##   P  player already on a target
+
+# text format:
+#   #  wall     .  floor
+#   T  target   $  box       B  box already sitting on a target
+#   @  player   P  player standing on a target
 func load_level_from_text(layout: String) -> void:
+	_reset_state()
+
+	var lines := layout.strip_edges().split("\n")
+	height = lines.size()
+	width = _longest_line(lines)
+
+	for y in range(height):
+		grid.append(_parse_row(lines[y], y))
+
+	level_loaded.emit()
+
+
+func _reset_state() -> void:
 	grid.clear()
 	boxes.clear()
 	targets.clear()
 	_history.clear()
 	move_count = 0
 
-	var lines := layout.strip_edges().split("\n")
-	height = lines.size()
-	width = 0
+
+func _longest_line(lines: Array) -> int:
+	var longest := 0
 	for line in lines:
-		width = max(width, line.length())
+		longest = max(longest, line.length())
+	return longest
 
-	for y in range(height):
-		var row: Array = []
-		var line: String = lines[y]
-		for x in range(width):
-			var ch := " "
-			if x < line.length():
-				ch = line[x]
-			var pos := Vector2i(x, y)
-			match ch:
-				"#":
-					row.append(CellType.WALL)
-				"T":
-					row.append(CellType.TARGET)
-					targets.append(pos)
-				"$":
-					row.append(CellType.FLOOR)
-					boxes.append(pos)
-				"B":
-					row.append(CellType.TARGET)
-					targets.append(pos)
-					boxes.append(pos)
-				"@":
-					row.append(CellType.FLOOR)
-					player_pos = pos
-				"P":
-					row.append(CellType.TARGET)
-					targets.append(pos)
-					player_pos = pos
-				_:
-					row.append(CellType.FLOOR)
-		grid.append(row)
 
-	level_loaded.emit()
+# builds one row of the grid and records any box/player/target found in it.
+# terrain (grid) and occupants (boxes/player) are handled by two separate
+# helpers below so a "B" doesn't need to repeat "this is a target" logic.
+func _parse_row(line: String, y: int) -> Array:
+	var row: Array = []
+	for x in range(width):
+		var ch := " " if x >= line.length() else line[x]
+		var pos := Vector2i(x, y)
+
+		var cell_type := _cell_type_for_char(ch)
+		row.append(cell_type)
+		if cell_type == CellType.TARGET:
+			targets.append(pos)
+
+		_apply_entity_for_char(ch, pos)
+	return row
+
+
+# just answers "what's the floor here" - wall, floor, or target square
+func _cell_type_for_char(ch: String) -> CellType:
+	match ch:
+		"#":
+			return CellType.WALL
+		"T", "B", "P":
+			return CellType.TARGET
+		_:
+			return CellType.FLOOR
+
+
+# separate from the above - this only cares about what's STANDING there
+func _apply_entity_for_char(ch: String, pos: Vector2i) -> void:
+	match ch:
+		"$", "B":
+			boxes.append(pos)
+		"@", "P":
+			player_pos = pos
 
 
 # ---------------------------------------------------------------------------
-# Core movement logic
+# movement
 # ---------------------------------------------------------------------------
 
 func try_move(direction: Direction) -> bool:
@@ -125,17 +137,35 @@ func try_move(direction: Direction) -> bool:
 
 	var box_index := boxes.find(next_pos)
 	if box_index != -1:
-		var box_next_pos: Vector2i = next_pos + delta
-		if not _is_walkable(box_next_pos) or boxes.has(box_next_pos):
+		# there's a box in front of us - try to push it
+		if not _push_box(box_index, next_pos, delta):
 			move_rejected.emit(direction)
 			return false
-		_push_snapshot()
-		boxes[box_index] = box_next_pos
-		player_pos = next_pos
 	else:
+		# nothing in the way, just walk
 		_push_snapshot()
 		player_pos = next_pos
 
+	_finish_move()
+	return true
+
+
+# handles the actual box-pushing part of a move. returns false if the box
+# can't go anywhere (wall behind it, or another box already there).
+func _push_box(box_index: int, box_pos: Vector2i, delta: Vector2i) -> bool:
+	var box_next_pos: Vector2i = box_pos + delta
+	if not _is_walkable(box_next_pos) or boxes.has(box_next_pos):
+		return false
+
+	_push_snapshot()
+	boxes[box_index] = box_next_pos
+	player_pos = box_pos
+	return true
+
+
+# common bit after any successful move - bump counter, tell everyone,
+# check if that move ended the level one way or another
+func _finish_move() -> void:
 	move_count += 1
 	state_changed.emit()
 	move_completed.emit(move_count)
@@ -145,19 +175,17 @@ func try_move(direction: Direction) -> bool:
 	elif is_deadlocked():
 		level_lost.emit(move_count)
 
-	return true
-
 
 func undo() -> bool:
 	if _history.is_empty():
 		return false
+
 	var snapshot: Dictionary = _history.pop_back()
 	player_pos = snapshot["player_pos"]
 	boxes = snapshot["boxes"].duplicate()
-	# Undo is itself treated as a move — it costs a step rather than
-	# rolling the counter back, so move_count always reflects total
-	# actions taken (forward moves + undos), matching the "rigid step
-	# framework" requirement.
+
+	# undo counts as a move too (costs a step) instead of rolling the
+	# counter back - keeps move_count = total actions taken, not "progress"
 	move_count += 1
 	state_changed.emit()
 	move_completed.emit(move_count)
@@ -171,25 +199,14 @@ func is_win() -> bool:
 	return true
 
 
-## Detects "no more solvable moves" states: a box that is not on a target
-## but is pinned into a corner it can never be pushed out of.
-##
-## This checks the classic *corner deadlock* only: a box is stuck if it has
-## a wall (or the grid boundary) on one horizontal side AND one vertical
-## side simultaneously — e.g. wall to its left AND wall above it. No push
-## direction can ever move a box out of a true corner, so the level is
-## unsolvable the moment this happens.
-##
-## Note: this intentionally does NOT catch every possible deadlock (e.g.
-## two boxes freezing each other along a wall with no target on that edge,
-## or multi-box "freeze" patterns). Those require heavier analysis; the
-## corner check catches the vast majority of dead-ends a player creates
-## and keeps this O(boxes) with no extra memory, matching the project's
-## performance constraints.
+# only catches the simple case: a box jammed into a real corner (wall on
+# one side + wall on an adjacent side). doesn't catch every deadlock
+# pattern (two boxes freezing each other along a wall, etc) but that
+# needs a lot more analysis for not much practical benefit here.
 func is_deadlocked() -> bool:
 	for box in boxes:
 		if targets.has(box):
-			continue
+			continue   # already solved, skip it
 		if _is_corner_stuck(box):
 			return true
 	return false
@@ -201,11 +218,12 @@ func _is_corner_stuck(box: Vector2i) -> bool:
 	var blocked_up := not _is_walkable(box + Vector2i(0, -1))
 	var blocked_down := not _is_walkable(box + Vector2i(0, 1))
 
+	# stuck if pinned on one horizontal side AND one vertical side
 	return (blocked_left or blocked_right) and (blocked_up or blocked_down)
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers
+# helpers
 # ---------------------------------------------------------------------------
 
 func _is_walkable(pos: Vector2i) -> bool:
@@ -215,8 +233,8 @@ func _is_walkable(pos: Vector2i) -> bool:
 
 
 func _push_snapshot() -> void:
-	# Only player_pos + boxes are copied (small arrays) — avoids deep-copying
-	# the whole grid on every move, keeping Undo memory-cheap.
+	# only copying player pos + boxes (small arrays), not the whole grid -
+	# keeps undo cheap even on bigger levels
 	_history.append({
 		"player_pos": player_pos,
 		"boxes": boxes.duplicate(),
