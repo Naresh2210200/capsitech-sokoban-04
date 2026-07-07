@@ -1,13 +1,10 @@
 extends CanvasLayer
-## MainMenu
-##
-## Simple entry-point menu: Start Game and Exit only. Never touches
-## GridManager/LevelManager state directly — just changes scene or
+# Entry-point menu - just Start and Exit. Doesn't touch GridManager or
+# LevelManager at all, only swaps scenes / quits the app.
 
-## Path to the main gameplay scene to load when "Start Game" is pressed.
 @export var game_scene_path: String = "res://Scene/main.tscn"
 
-@onready var _start_button: Button = $Menu/VBox/StartButton
+@onready var _start_button: Button = $Menu/VBox/PlayButton
 @onready var _exit_button: Button = $Menu/VBox/ExitButton
 
 
