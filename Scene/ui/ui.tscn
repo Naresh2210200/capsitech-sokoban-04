@@ -2,30 +2,64 @@
 
 [ext_resource type="Script" uid="uid://b8lys0ji5qjnu" path="res://scripts/UI/UIManager.gd" id="1_lb7x7"]
 [ext_resource type="FontFile" uid="uid://byasi88kcjdd1" path="res://Scene/assets/MontenegrinGothicOne-Regular.ttf" id="2_wisr7"]
+[ext_resource type="Texture2D" uid="uid://cw4hdda1u4on" path="res://Scene/assets/charcter/Window.png" id="3_f5vf4"]
+[ext_resource type="Texture2D" uid="uid://c37vfc2rdc1pb" path="res://Scene/assets/charcter/undo.png" id="3_y8gxa"]
+[ext_resource type="Texture2D" uid="uid://y7gljis2xnat" path="res://Scene/assets/charcter/capsitech.png" id="4_n0nu3"]
+[ext_resource type="Texture2D" uid="uid://cr11t8owadgjp" path="res://Scene/assets/charcter/undo click.png" id="4_qkcd3"]
+[ext_resource type="Texture2D" uid="uid://5wlwtf734321" path="res://Scene/assets/charcter/hover Button.png" id="5_jufa6"]
+[ext_resource type="Texture2D" uid="uid://vh00bg0im53d" path="res://Scene/assets/charcter/click button.png" id="5_y8gxa"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lb7x7"]
-bg_color = Color(1, 1, 1, 1)
-border_width_left = 10
-border_width_top = 10
-border_width_right = 10
-border_width_bottom = 10
-border_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vhphd"]
+texture = ExtResource("3_y8gxa")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wisr7"]
-bg_color = Color(0, 0, 0, 1)
-border_width_left = 10
-border_width_top = 10
-border_width_right = 10
-border_width_bottom = 10
-border_color = Color(1, 1, 1, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4wxpl"]
+texture = ExtResource("4_qkcd3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_f7pm3"]
+texture = ExtResource("4_qkcd3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6ux7k"]
+texture = ExtResource("4_n0nu3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7sks2"]
+texture = ExtResource("5_y8gxa")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mmd6q"]
+texture = ExtResource("5_jufa6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nqkug"]
+texture = ExtResource("3_f5vf4")
+texture_margin_left = 120.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jufa6"]
+texture = ExtResource("4_n0nu3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vde53"]
+texture = ExtResource("5_y8gxa")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1imlp"]
+texture = ExtResource("5_jufa6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2xktr"]
+texture = ExtResource("3_f5vf4")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_f8ugq"]
+texture = ExtResource("4_n0nu3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_y8gxa"]
+texture = ExtResource("5_y8gxa")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_db4mf"]
+texture = ExtResource("5_jufa6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2xp4g"]
+texture = ExtResource("4_n0nu3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ivet2"]
+texture = ExtResource("5_y8gxa")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_s6id8"]
+texture = ExtResource("5_jufa6")
 
 [node name="UI" type="CanvasLayer" unique_id=129539808]
 script = ExtResource("1_lb7x7")
@@ -59,9 +93,9 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -273.0
-offset_top = -201.0
-offset_right = -27.0
-offset_bottom = -51.0
+offset_top = -293.08502
+offset_right = -73.0
+offset_bottom = -93.08496
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
@@ -70,10 +104,9 @@ theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_wisr7")
 theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_lb7x7")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_wisr7")
-theme_override_styles/hover = SubResource("StyleBoxFlat_wisr7")
-text = "Undo"
+theme_override_styles/normal = SubResource("StyleBoxTexture_vhphd")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_4wxpl")
+theme_override_styles/hover = SubResource("StyleBoxTexture_f7pm3")
 
 [node name="Exit" type="Button" parent="HUD" unique_id=1730365586]
 layout_mode = 1
@@ -82,10 +115,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 96.0
-offset_top = -155.0
-offset_right = 304.0
-offset_bottom = -66.0
+offset_left = 102.0
+offset_top = -218.0
+offset_right = 310.0
+offset_bottom = -129.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
@@ -94,9 +127,9 @@ theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_wisr7")
 theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_lb7x7")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_wisr7")
-theme_override_styles/hover = SubResource("StyleBoxFlat_wisr7")
+theme_override_styles/normal = SubResource("StyleBoxTexture_6ux7k")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_7sks2")
+theme_override_styles/hover = SubResource("StyleBoxTexture_mmd6q")
 text = "Exit"
 
 [node name="Level" type="Label" parent="HUD" unique_id=1075418301]
@@ -139,51 +172,69 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = -150.0
+offset_top = -229.0
 offset_right = 200.0
-offset_bottom = 150.0
+offset_bottom = 257.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_nqkug")
 
 [node name="VBox" type="VBoxContainer" parent="WinOverlay/Dim/WinPanel" unique_id=527355887]
 layout_mode = 1
-anchors_preset = 13
+anchors_preset = 8
 anchor_left = 0.5
+anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -119.0
-offset_right = 119.0
+anchor_bottom = 0.5
+offset_left = -142.0
+offset_top = -187.0
+offset_right = 142.0
+offset_bottom = 153.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="WinTitle" type="Label" parent="WinOverlay/Dim/WinPanel/VBox" unique_id=419421389]
 layout_mode = 2
-size_flags_vertical = 6
-theme_override_font_sizes/font_size = 30
+size_flags_horizontal = 4
+size_flags_vertical = 7
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_wisr7")
+theme_override_font_sizes/font_size = 32
 text = "Level Complete!"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="StarsLabel" type="Label" parent="WinOverlay/Dim/WinPanel/VBox" unique_id=1346506868]
 layout_mode = 2
-size_flags_vertical = 6
+size_flags_horizontal = 4
+size_flags_vertical = 7
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 
 [node name="MovesLabel" type="Label" parent="WinOverlay/Dim/WinPanel/VBox" unique_id=1316090942]
 layout_mode = 2
-size_flags_vertical = 6
+size_flags_horizontal = 4
+size_flags_vertical = 7
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_wisr7")
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 
 [node name="RestartButton" type="Button" parent="WinOverlay/Dim/WinPanel/VBox" unique_id=793017930]
 layout_mode = 2
-size_flags_vertical = 6
+size_flags_horizontal = 4
+size_flags_vertical = 7
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_wisr7")
 theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxTexture_jufa6")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_vde53")
+theme_override_styles/hover = SubResource("StyleBoxTexture_1imlp")
 text = "Play Again"
 
 [node name="LoseOverlay" type="Control" parent="." unique_id=609943154]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -209,12 +260,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+offset_left = -245.0
+offset_top = -338.0
+offset_right = 356.0
+offset_bottom = 277.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_2xktr")
 
 [node name="VBox" type="VBoxContainer" parent="LoseOverlay/Dim/LosePanel" unique_id=1891980711]
 layout_mode = 1
@@ -222,30 +274,38 @@ anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -119.0
-offset_right = 119.0
+offset_left = -160.0
+offset_top = 44.0
+offset_right = 122.0
+offset_bottom = -52.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="LoseTitle" type="Label" parent="LoseOverlay/Dim/LosePanel/VBox" unique_id=1414177907]
 layout_mode = 2
-size_flags_vertical = 6
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 30
 text = "Level Fail"
 horizontal_alignment = 1
 
 [node name="LoseMovesLabel" type="Label" parent="LoseOverlay/Dim/LosePanel/VBox" unique_id=1844516316]
 layout_mode = 2
-size_flags_vertical = 6
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_wisr7")
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 
 [node name="TryAgainButton" type="Button" parent="LoseOverlay/Dim/LosePanel/VBox" unique_id=935517905]
 layout_mode = 2
-size_flags_vertical = 6
-theme_override_colors/font_color = Color(0.875, 0.875, 0.875, 1)
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxTexture_f8ugq")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_y8gxa")
+theme_override_styles/hover = SubResource("StyleBoxTexture_db4mf")
 text = "Try Again"
 
 [node name="CreditsOverlay" type="Control" parent="." unique_id=218048853]
@@ -265,7 +325,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.003921569)
+color = Color(0, 0, 0, 1)
 
 [node name="VBox" type="VBoxContainer" parent="CreditsOverlay/Dim" unique_id=1297866927]
 layout_mode = 1
@@ -284,6 +344,7 @@ theme_override_constants/separation = 4
 [node name="ThankYouTitle" type="Label" parent="CreditsOverlay/Dim/VBox" unique_id=1804647229]
 layout_mode = 2
 size_flags_vertical = 6
+theme_override_fonts/font = ExtResource("2_wisr7")
 theme_override_font_sizes/font_size = 30
 text = "Thank You for Playing"
 horizontal_alignment = 1
@@ -291,14 +352,18 @@ horizontal_alignment = 1
 [node name="DesignedByLabel" type="Label" parent="CreditsOverlay/Dim/VBox" unique_id=209959748]
 layout_mode = 2
 size_flags_vertical = 6
+theme_override_fonts/font = ExtResource("2_wisr7")
 theme_override_font_sizes/font_size = 32
 text = "Designed by 
-Me"
+Naresh Raj"
 horizontal_alignment = 1
 
 [node name="MainMenuButton" type="Button" parent="CreditsOverlay/Dim/VBox" unique_id=2118253744]
 layout_mode = 2
 size_flags_vertical = 6
 theme_override_colors/font_color = Color(0.875, 0.875, 0.875, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxTexture_2xp4g")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_ivet2")
+theme_override_styles/hover = SubResource("StyleBoxTexture_s6id8")
 text = "Main Menu"
