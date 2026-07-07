@@ -45,9 +45,7 @@ func _ready() -> void:
 	load_level_from_file(default_level_path)
 
 
-# ---------------------------------------------------------------------------
 # loading a level
-# ---------------------------------------------------------------------------
 
 func load_level_from_file(path: String) -> void:
 	if not FileAccess.file_exists(path):
@@ -130,9 +128,7 @@ func _apply_entity_for_char(ch: String, pos: Vector2i) -> void:
 			player_pos = pos
 
 
-# ---------------------------------------------------------------------------
 # movement
-# ---------------------------------------------------------------------------
 
 func try_move(direction: Direction) -> bool:
 	if _game_over:
@@ -237,10 +233,7 @@ func _is_corner_stuck(box: Vector2i) -> bool:
 	return (blocked_left or blocked_right) and (blocked_up or blocked_down)
 
 
-# ---------------------------------------------------------------------------
 # helpers
-# ---------------------------------------------------------------------------
-
 func _is_walkable(pos: Vector2i) -> bool:
 	if pos.x < 0 or pos.x >= width or pos.y < 0 or pos.y >= height:
 		return false
