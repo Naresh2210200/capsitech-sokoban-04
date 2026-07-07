@@ -29,6 +29,13 @@ extends CanvasLayer
 @export var three_star_moves: int = 10
 @export var two_star_moves: int = 15
 
+## How long to wait before an overlay starts fading in - gives the last
+## box's slide-into-place tween (in LevelView3D) time to actually finish,
+## instead of the screen slamming down mid-animation.
+@export var overlay_delay: float = 0.2
+## How long the fade-in itself takes once it starts.
+@export var overlay_fade_time: float = 0.35
+
 
 func _ready() -> void:
 	_win_overlay.visible = false
@@ -89,14 +96,14 @@ func _on_level_changed(index: int, _path: String) -> void:
 
 func _on_level_won(move_count: int) -> void:
 	if not LevelManager.has_next_level():
-		_credits_overlay.visible = true
+		_show_overlay(_credits_overlay)
 		return
 
 	var stars := _calculate_stars(move_count)
 	_win_stars.text = "★".repeat(stars) + "☆".repeat(3 - stars)
 	_win_moves_label.text = "Solved in %d moves" % move_count
 	_restart_button.text = "Next Level"
-	_win_overlay.visible = true
+	_show_overlay(_win_overlay)
 
 
 func _on_restart_pressed() -> void:
@@ -119,7 +126,7 @@ func _calculate_stars(move_count: int) -> int:
 
 func _on_level_lost(_move_count: int) -> void:
 	_lose_moves_label.text = "No box can reach a target."
-	_lose_overlay.visible = true
+	_show_overlay(_lose_overlay)
 
 
 func _on_try_again_pressed() -> void:
@@ -140,3 +147,19 @@ func _on_main_menu_pressed() -> void:
 func _hide_win_and_lose_overlays() -> void:
 	_win_overlay.visible = false
 	_lose_overlay.visible = false
+
+
+# ---------------------------------------------------------------------------
+# shared overlay transition - waits a beat for the last move's animation to
+# land, then fades the overlay in instead of snapping it on top of the scene
+# ---------------------------------------------------------------------------
+
+func _show_overlay(overlay: Control) -> void:
+	overlay.modulate.a = 0.0
+	overlay.visible = true
+
+	if overlay_delay > 0.0:
+		await get_tree().create_timer(overlay_delay).timeout
+
+	var tween := create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, overlay_fade_time)
