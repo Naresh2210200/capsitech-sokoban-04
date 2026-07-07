@@ -1,7 +1,7 @@
 # Sokoban Grid Puzzle
 
-Grid-based Sokoban puzzle built in Godot 4.7, submitted for the Capsitech technical assignment ("Project Engineering & Architecture Assignment: Grid Puzzle Challenge").
-
+Grid-based Sokoban puzzle built in Godot 4.7, submitted for the Capsitech technical assignment ("Project Engineering & Architecture Assignment: Grid Puzzle Challenge"). 
+**Prebuilt APK:** [Download / Play on itch.io](https://nareshraj.itch.io/sabokan)
 ## Features
 
 - **N × M grid simulation** — grid data is fully decoupled from rendering; the parser (`GridManager._parse_row`) pads ragged/short rows with floor cells, so non-rectangular layouts are supported even though the 5 shipped levels are all rectangular
